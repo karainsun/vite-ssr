@@ -1,0 +1,147 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "image": [
+        {
+          "name": "6b6d3340-42e7-11ec-887b-bdc5138accda.png",
+          "url": "http://cdn.kayrain.cn/6b6d3340-42e7-11ec-887b-bdc5138accda.png"
+        }
+      ],
+      "id": 7,
+      "title": "[ Nodemailer ] 使用 Nodemailer 在node中收发电子邮件",
+      "description": "在很多项目中，我们都会遇到邮件注册，邮件反馈等需求。在node中收发电子邮件也非常简单，因为强大的社区有各种各样的包可以供我么直接使用。Nodemailer包就可以帮助我们快速实现发送邮件的功能。",
+      "top": 0,
+      "isComent": true,
+      "isReprint": false,
+      "content": "<h1 id=\"w74zi\">Nodemailer</h1><blockquote><p>Nodemailer是一个简单易用的Node.js邮件发送组件</p><p>官网地址：<a href=\"https://nodemailer.com\" target=\"_blank\" style=\"font-size: 14px; font-family: inherit;\">https://nodemailer.com</a></p><p>GitHub地址：<a href=\"https://github.com/nodemailer/nodemailer\" target=\"_blank\" style=\"font-size: 14px; font-family: inherit;\">https://github.com/nodemailer/nodemailer</a></p><p>Nodemailer的主要特点包括：<br/>&nbsp;&nbsp;&nbsp;<font color=\"#c24f4a\">&nbsp;支持Unicode编码<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持Window系统环境<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持HTML内容和普通文本内容<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持附件(传送大附件)<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持HTML内容中嵌入图片<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持SSL/STARTTLS安全的邮件发送<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持内置的transport方法和其他插件实现的transport方法<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持自定义插件处理消息<br/>&nbsp;&nbsp;&nbsp;&nbsp;支持XOAUTH2登录验证</font></p></blockquote><h2 id=\"6ovbw\">安装使用</h2><h3 id=\"f3vup\">1、下载安装插件</h3><p>执行命令：<span style=\"font-family: inherit;\"><font color=\"#f9963b\">npm install nodemailer --save</font></span></p><p><img src=\"http://cdn.kayrain.cn/a6b8d660-42e8-11ec-887b-bdc5138accda.png\" contenteditable=\"false\"/><br/></p><h3 id=\"klerr\">2、官方示例</h3><pre><code class=\"JavaScript\"><xmp>\"use strict\";\nconst nodemailer = require(\"nodemailer\");\n// async..await is not allowed in global scope, must use a wrapper\nasync function main() {\n  // Generate test SMTP service account from ethereal.email\n  // Only needed if you don't have a real mail account for testing\n  let testAccount = await nodemailer.createTestAccount();\n  // create reusable transporter object using the default SMTP transport\n  let transporter = nodemailer.createTransport({\n    host: \"smtp.ethereal.email\",\n    port: 587,\n    secure: false, // true for 465, false for other ports\n    auth: {\n      user: testAccount.user, // generated ethereal user\n      pass: testAccount.pass, // generated ethereal password\n    },\n  });\n  // send mail with defined transport object\n  let info = await transporter.sendMail({\n    from: '\"Fred Foo\" <foo@example.com>', // sender address\n    to: \"bar@example.com, baz@example.com\", // list of receivers\n    subject: \"Hello\", // Subject line\n    text: \"Hello world?\", // plain text body\n    html: \"<b>Hello world?</b>\", // html body\n  });\n  console.log(\"Message sent: %s\", info.messageId);\n  console.log(\"Preview URL: %s\", nodemailer.getTestMessageUrl(info));\n}\nmain().catch(console.error);</xmp></code></pre><h3><font color=\"#000000\"><br/></font></h3><h2><font color=\"#000000\" id=\"vpi9j\">应用实例</font></h2><h3><font color=\"#000000\" id=\"6ncw1\">1、获取授权码</font></h3><div><font color=\"#000000\">这里我使用QQ邮箱对外发送邮件，首先生成授权码</font></div><div><img src=\"http://cdn.kayrain.cn/5f836510-45b0-11ec-887b-bdc5138accda.png\" contenteditable=\"false\"/></div><h3><font color=\"#000000\" id=\"ar1pd\">2、开启一个SMTP连接池</font></h3><pre><code class=\"Bash\"><xmp>const nodemailer = require('nodemailer');\nconst smtpTransport = require('nodemailer-smtp-transport');  \n// 开启一个 SMTP 连接池\nconst transport = nodemailer.createTransport(smtpTransport({\n  host: \"smtp.qq.com\", // qq邮箱主机\n  secure: true, // 使用 SSL\n  secureConnection: true, // 使用 SSL\n  port: 465, // SMTP 端口 或者587\n  auth: {\n    user: \"example@foxmail.com\", // 账号：域名邮箱账号\n    pass: \"SMPT获取的密码\" // 密码：SMPT获取的密码\n  }\n}));</xmp></code></pre><h3 id=\"c5qp8\">3、发送邮件方法</h3><pre><code class=\"Bash\"><xmp>const sendEmail = ({email, content, key, post = '', link = '', m_content}) => { \n  // 设置邮件内容\n  const htmlStr = '可以自定义邮件模板';\n  const mailOptions = {\n    from: \"kayrain.sun@foxmail.com\", // 发件地址\n    to: email, // 收件列表\n    subject: \"来自KBlog的回复\", // 标题\n    text: \"\",\n    html: htmlStr // html 内容\n  } \n  return new Promise((resolve, reject) => {\n    transport.sendMail(mailOptions, function (error, response) { \n      if (error) {\n        console.log(\"邮件发送失败: \" + error);\n        reject({\n          status: 0,\n          message: `邮件发送失败：${error}`\n        }); \n      } else {\n        resolve({\n          status: 1,\n          message: \"邮件发送成功\"\n        }); \n      }\n      // transport.close(); // 如果没用，关闭连接池\n    });\n  })\n}</xmp></code></pre><p>参考文章：<a href=\"https://mp.weixin.qq.com/s?__biz=MzU0OTE3MjE1Mw==&amp;mid=2247483763&amp;idx=1&amp;sn=0166a93351c092aeb2c4efb8c0e0a4b3&amp;chksm=fbb2a7a5ccc52eb3b241f32601a23be8a431e671ff493327ff61becc4f4ceb1da319ec6c8ea8#rd\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); font-size: 14px; font-family: inherit;\">Node.js使用Nodemailer发送邮件</a></p><p>源码地址：<a href=\"https://github.com/karainsun/MyBlog/blob/master/server/utils/email.js\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); font-size: 14px; font-family: inherit;\">https://github.com/karainsun/MyBlog/blob/master/server/utils/email.js</a></p>",
+      "created_at": "2021-11-11T12:16:05.000Z",
+      "tags": [
+        {
+          "name": "Node.js",
+          "id": 79
+        },
+        {
+          "name": "Nodemailer",
+          "id": 80
+        }
+      ],
+      "category": {
+        "name": "后端",
+        "id": 52
+      }
+    },
+    {
+      "image": [
+        {
+          "name": "83d503a0-42d7-11ec-887b-bdc5138accda.jpeg",
+          "url": "http://cdn.kayrain.cn/83d503a0-42d7-11ec-887b-bdc5138accda.jpeg"
+        }
+      ],
+      "id": 6,
+      "title": "[ Ubuntu root ] Ubuntu 18.04开启root权限",
+      "description": "腾讯云轻量应用服务器安装Ubuntu 18.04修改默认账户，开启root权限。",
+      "top": 0,
+      "isComent": true,
+      "isReprint": false,
+      "content": "<h2 id=\"y1tif\">1、默认账户登录</h2><div><p>为root设置初始密码，使用gitbash建立远程连接，输入命令</p><pre><code class=\"Bash\"><xmp>sudo passwd root</xmp></code></pre></div><p><img src=\"http://cdn.kayrain.cn/60275590-42e4-11ec-887b-bdc5138accda.png\" contenteditable=\"false\"/><br/><h2 id=\"ssybl\">2、修改ssh配置</h2><div>输入命令：</div></p><pre><code class=\"Bash\"><xmp>sudo vi /etc/ssh/sshd_config\n</xmp></code></pre><div></div><p>将PermitRootLogin属性改为yes</p><p><img src=\"http://cdn.kayrain.cn/b2ae8040-42e4-11ec-887b-bdc5138accda.png\" contenteditable=\"false\"/><br/><h2 id=\"mumsa\">3、重启ssh服务</h2></p><p>输入命令：</p><pre><code class=\"Bash\"><xmp>sudo service ssh restart</xmp></code></pre>",
+      "created_at": "2021-11-11T10:23:11.000Z",
+      "tags": [
+        {
+          "name": "ubuntu",
+          "id": 54
+        }
+      ],
+      "category": {
+        "name": "后端",
+        "id": 39
+      }
+    },
+    {
+      "image": [
+        {
+          "name": "4ae09390-403c-11ec-97a1-1b96f4618576.jpeg",
+          "url": "http://cdn.kayrain.cn/4ae09390-403c-11ec-97a1-1b96f4618576.jpeg"
+        }
+      ],
+      "id": 5,
+      "title": "[ Ubuntu Nginx ] Ubuntu安装Nginx web服务器",
+      "description": "ubuntu安装nginx，支持两种安装方式，一种是apt-get的方式，另一种是根据包安装的方式，这里使用 apt-get的方式安装Nginx",
+      "top": 0,
+      "isComent": true,
+      "isReprint": false,
+      "content": "<h1 id=\"eb3iw\">安装步骤</h1><blockquote><p>服务器我是在腾讯云上买的轻量应用服务器，之所以买它，是因为便宜，对于轻量应用服务器这款产品这里就不过多介绍了。<br/></p></blockquote><h2 id=\"pcqkm\">第一步，SSH远程登录</h2><p>桌面打开Git bash，<span style=\"font-family: inherit;\">输入命令：ssh ubuntu@XXX(你的IP)</span></p><p><img src=\"http://cdn.kayrain.cn/a373a2d0-403d-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/><br/></p><p><h2 id=\"lit3l\">第二步，更新软件包</h2>保险起见先更新下软件包<br/>输入命令：sudo apt update</p><p><img src=\"http://cdn.kayrain.cn/b8b1de50-403d-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/></p><p><h2 id=\"uaiug\">第三步，检查本地</h2>输入命令 apt show nginx</p><p><br/><img src=\"http://cdn.kayrain.cn/c9424930-403d-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/>图中显示有Nginx 1.14的包</p><h2 id=\"6ekjs\">第四步，下载Nginx</h2><p>输入命令：sudo apt install nginx -y</p><p><img src=\"http://cdn.kayrain.cn/e774ffb0-403d-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/><br/></p><p>最后，安装完成之后，浏览器直接访问公网IP就可以看到如下所示：</p><p><img src=\"http://cdn.kayrain.cn/f560d770-403d-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/><br/></p><p>提示：如果此时公网IP还不可访问，请检查云主机防火墙是否打开，<br/>80和443端口是否打开（我这里是直接默认打开的，所以可以直接访问）</p><img src=\"http://cdn.kayrain.cn/07b07e80-403e-11ec-97a1-1b96f4618576.png\" contenteditable=\"false\"/><p><br/></p>",
+      "created_at": "2021-11-08T02:46:52.000Z",
+      "tags": [
+        {
+          "name": "ubuntu",
+          "id": 51
+        },
+        {
+          "name": "Nginx",
+          "id": 52
+        }
+      ],
+      "category": {
+        "name": "后端",
+        "id": 37
+      }
+    },
+    {
+      "image": [
+        {
+          "name": "be4b9a20-3e0f-11ec-ad20-f70950d9e467.jpeg",
+          "url": "http://cdn.kayrain.cn/be4b9a20-3e0f-11ec-ad20-f70950d9e467.jpeg"
+        }
+      ],
+      "id": 4,
+      "title": "[ Blog renovation ] 翻新了博客站点，简单盘一盘",
+      "description": "早前写过一版了，由于技术滞后，索性将博客再装修一番（服务器快到期了），一句话形容此站点：家雀儿虽然小了点，但五脏也俱全了。",
+      "top": 1,
+      "isComent": true,
+      "isReprint": false,
+      "content": "<h1 id=\"1jy8v\">前言</h1><blockquote><p>先简单介绍下旧版博客er吧，初版站点使用了前端渐进式框架Vue，后台UI为ElementUI，以vue-cli为基础搭建，后台服务使用Node框架Express以及非关新型数据库MongoDB，初版已经相当不错了，但就是有点儿拿不出手。作为WEB前端的拥趸之一，怎么不去拥抱的全面些呢，我要做全栈（破锣嗓子）！<span style=\"font-family: inherit;\">于是新版站点把压箱底儿的手艺全拿出来了，什么Vue3、Vite2、React Hooks、Ant Design、Webpack5、</span><span style=\"font-family: inherit;\">Webpack5、koa2、MySql、Sequelize、Typescript等等，东北大乱炖了属于是。</span></p></blockquote><h2 id=\"rdbv4\">一、项目结构及简述</h2><h3 id=\"9gf07\">1、admin：博客后台管理</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;用户注册时会根据邀请码的有无进行简单的二级权限控制，没有邀请码的用户只提供查询的权限，而填写了邀请码的用户会提供所有该有的权限之后的功能就不多赘述了，不过就是一系列针对博客模块的CRUD操作了。</p><h3 id=\"1v3fb\">2、front：博客前台</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;前台主要有主页（文章列表）、归档（根据年月分组）、分类、标签、收藏（干货网站）、关于、留言这几个模块组成。</p><h3 id=\"f5rh9\">3、server：服务端</h3><p>&nbsp; &nbsp;&nbsp;<span style=\"font-family: inherit;\">前后台API使用白名单做了一个区分，名单里的API是不需要验证权限就可以访问的。</span><br/></p><h2 id=\"zpm6s\">二、框架、工具库以及插件介绍</h2><h3 id=\"1yt6v\">1、Admin&nbsp;</h3><p>&nbsp; &nbsp;&nbsp;<a href=\"https://webpack.docschina.org/\" target=\"_blank\"><font color=\"#46acc8\">Webpack5</font></a>：<span style=\"font-family: inherit;\">一个模块打包器。它的主要目标是将 JavaScript 文件打包在一起,打包后的文件用于在浏览器中使用,</span><span style=\"font-family: inherit;\">但它也能够胜任转换(transform)、打包(bundle)或包裹(package)任何..&nbsp; &nbsp;总之就是很棒了。</span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://react.docschina.org/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">React</font></span></a><span style=\"font-family: inherit;\">：Admin前端框架选用React，并且全面拥抱Hooks。</span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://ant.design/index-cn\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Ant Design</font></span></a><span style=\"font-family: inherit;\">：UI框架采用Ant Design（链接），个人认为Ant的UI界面风格总体来说比圆润一些，组件api也很丰富。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.tslang.cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Typescript</font></span></a><span style=\"font-family: inherit;\">：使用Typescript静态类型检查，不得不说，ts确实很强大，开发类型化，有效避免了很多因语言本身的灵活所导致的 Bug 的出现。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.tailwindcss.cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Tailwindcss</font></span></a><span style=\"font-family: inherit;\">：这个很早之前就想用它了，它不仅是一个 utility class 的集合。它实际上定义了一个通过以 token list 语法（HTML class）承载的 DSL，用来书写等价于 CSS/Sass/Less 的样式声明等等，不过有些个性化的样式还是要手写的。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://redux.js.org/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Redux</font></span></a><span style=\"font-family: inherit;\">：React的数据管理库，其实小项目用Redux有点儿重，之后不妨试试Mobx，更轻量一些。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.wangeditor.com/doc/pages/09-%E7%94%A8%E4%BA%8EVue%E5%92%8CReact/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Wangeditor-for-react</font></span></a><span style=\"font-family: inherit;\">：Wangeditor针对React的编辑器，轻量级 web 富文本编辑器，配置方便，使用简单。</span></p><h3 id=\"7h9sk\">2、Front</h3><p>&nbsp; &nbsp;&nbsp;<a href=\"https://vitejs.cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Vite2</font></span></a><span style=\"font-family: inherit;\">：使用Vite来构建博客前台，一来尝尝鲜，二来嘛尝尝鲜，不得不说，下手之后构建速度挠儿一下就上来了。</span><br/></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://v3.vuejs.org/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Vue3</font></span></a><span style=\"font-family: inherit;\">：性能的提升，Composition API，更好的Typescript支持，Teleport(瞬移组件)、Suspense(解决异步加载组件问题)和全局 API 的修改和优化，Vue3兼容大部分Vue2的特性。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"http://lesscss.cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Less</font></span></a><span style=\"font-family: inherit;\">：CSS预编译，Admin项目中也用了。为什么用Less呢，</span><span style=\"font-family: inherit;\">“因为 Less 和 CSS 非常像，因此很容易学习。而且 Less 仅对 CSS 语言增加了少许方便的扩展，这就是 Less 如此易学的原因之一”</span></p><p>     ——官网如是说。</p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.npmjs.com/package/mitt\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Mitt</font></span></a><span style=\"font-family: inherit;\">：一个事件总线三方库，相当于2.x中的EventBus，非常管用。</span><br/></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.wangeditor.com/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Wangeditor</font></span></a><span style=\"font-family: inherit;\">：还是那个编辑器。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<span style=\"font-family: inherit;\"><font color=\"#46acc8\">UI</font>：UI没用框架。</span><span style=\"font-family: inherit;\"><br/></span></p><h3 id=\"ob1bk\">3、Server</h3><p>&nbsp; &nbsp;&nbsp;<a href=\"https://nodejs.org/zh-cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Node.js</font></span></a><span style=\"font-family: inherit;\">： 是一个基于 Chrome V8 引擎的 JavaScript 运行时。</span><br/></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://koa.bootcss.com/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Koa2</font></span></a><span style=\"font-family: inherit;\">：基于Node.js平台的web开发框架，为什么使用koa呢，大概因为我喜欢吃洋葱。。。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.mysql.com/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Mysql</font></span></a><span style=\"font-family: inherit;\">：MySQL 是最流行的关系型数据库管理系统，MongoDB也还行其实，主要是想试试关系型的。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.sequelize.com.cn/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Sequelize</font></span></a><span style=\"font-family: inherit;\">：Sequelize 是一个基于 promise 的 Node.js ORM，ORM即对象关系映射（Object-Relationl Mapping）前支持 Postgres, MySQL, MariaDB, SQLite 以及 Microsoft SQL Server. 它具有强大的事务支持, 关联关系, 预读和延迟加载,读取复制等功能。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.lodashjs.com/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Lodash</font></span></a><span style=\"font-family: inherit;\">：一个一致性、模块化、高性能的 JavaScript 实用工具库。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.qiniu.com/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Qniu</font></span></a><span style=\"font-family: inherit;\">：七牛云储存kodo，图片、视频等资源如果存在自己服务器 访问会很吃带宽，云储存也有很多选择的，类似的比如阿里的OSS。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://nodemailer.com/about/\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Nodemailer</font></span></a><span style=\"font-family: inherit;\">：是一个简单易用的Node.js邮件发送组件。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.npmjs.com/package/bcryptjs\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Bcryptjs</font></span></a><span style=\"font-family: inherit;\">：bcryptjs是nodejs中比较好的一款加盐(salt)加密的包。</span><span style=\"font-family: inherit;\"><br/></span></p><p>&nbsp; &nbsp;&nbsp;<a href=\"https://www.npmjs.com/package/jsonwebtoken\" target=\"_blank\"><span style=\"font-family: inherit;\"><font color=\"#46acc8\">Jsonwebtoken</font></span></a><span style=\"font-family: inherit;\">：JWT，即JSON Web Token，当用户使用它的认证信息登陆系统之后，会返回给用户一个JWT，用户只需要本地保存即可。</span><span style=\"font-family: inherit;\"><br/></span></p><h2 id=\"2aie9\">三、部署上线</h2><p>&nbsp; &nbsp;<font face=\"Times New Roman\">&nbsp;云主机选择的是Ubuntu的，解析完了域名之后，使用VScode的远程资源管理工具配置好Nginx。由于项目是分三个子项目开发的，前后台要分别打包，然后统一上传。还有使用了 PM2，PM2（Process Manager 2 ）是具有内置负载均衡器的Node.js应用程序的生产运行时和进程管理器。它允许您永久保持应用程序活跃，无需停机即可重新加载它们，并促进常见的Devops任务。</font><br/></p><h2 id=\"zswe1\">四、小结</h2><p>&nbsp; &nbsp; 做个站的缘由就是对自己的技术自测复盘一下，这也是写博客的初衷，总之无论项目大小，需求繁简，都需要不断地总结复盘，巩固，历久弥新。</p>",
+      "created_at": "2021-10-29T03:27:31.000Z",
+      "tags": [
+        {
+          "name": "Blog renovation",
+          "id": 50
+        }
+      ],
+      "category": {
+        "name": "随笔",
+        "id": 36
+      }
+    },
+    {
+      "image": [
+        {
+          "name": "6ee06010-35f9-11ec-8aa2-dd379eac3f1a.jpeg",
+          "url": "http://cdn.kayrain.cn/6ee06010-35f9-11ec-8aa2-dd379eac3f1a.jpeg"
+        }
+      ],
+      "id": 3,
+      "title": "[ Ubuntu MySql ]：root权限丢失 Access denied for user 'root'@'localhost' (using password: YES)",
+      "description": "在博客里重新编辑文章时，提交的时候提示没有 DELETE 权限，使用Navicat手动修改root权限也修改不了，百度了一堆最终解决。",
+      "top": 0,
+      "isComent": true,
+      "isReprint": true,
+      "content": "<h2 id=\"pboqe\">问题描述</h2><blockquote><p>数据库增删改操作提示：Access denied for user 'root'@'localhost' (using password: YES)<br/></p></blockquote><p>由于头一次碰见这种问题，所以一股脑的搜罗了一堆技术文章，找到了一篇极简的方案。</p><h2 id=\"8772l\">解决步骤</h2><h3 id=\"r9zrx\">1、使用 service 停止mysql：service mysql stop</h3><p><br/></p><h3 id=\"3hkw4\">2、使用 service 启动：service mysql start</h3><h3 id=\"sstm5\">3、手动修改用户的权限。使其可以设置权限</h3><pre><code class=\"Bash\"><xmp>UPDATE mysql.user SET Grant_priv='Y', Super_priv='Y' WHERE User='root';</xmp></code></pre><h3 id=\"50bl8\">4、刷新缓冲区</h3><pre><code class=\"Bash\"><xmp>FLUSH PRIVILEGES;</xmp></code></pre><h3 id=\"585zi\">5、重置权限</h3><pre><code class=\"Bash\"><xmp>GRANT ALL ON *.* TO 'root'@'localhost';</xmp></code></pre><h3 id=\"zj49b\">6、查看权限列表</h3><pre><code class=\"Bash\"><xmp>select * from mysql.user\\G</xmp></code></pre><p>此时就会看到下图内容，就说明修改成功</p><p><img src=\"http://cdn.kayrain.cn/e8d96460-35fa-11ec-8aa2-dd379eac3f1a.png\" contenteditable=\"false\"/><br/></p><p><br/></p><p>参考文章：<a href=\"https://blog.csdn.net/god_wen/article/details/78961319\" target=\"_blank\"><font color=\"#4d80bf\">恢复mysql 中root 用户的所有权限</font><span></span></a><br/></p>",
+      "created_at": "2021-10-26T01:21:44.000Z",
+      "tags": [
+        {
+          "name": "mysql",
+          "id": 55
+        },
+        {
+          "name": "ubuntu",
+          "id": 56
+        }
+      ],
+      "category": {
+        "name": "后端",
+        "id": 40
+      }
+    }
+  ]
+}
