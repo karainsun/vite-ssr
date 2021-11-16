@@ -1,13 +1,15 @@
 <template>
-  <router-view></router-view>
+  <div class="home">
+    <h1>HOME.</h1>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 
-export default defineComponent({
-  asyncData() {
-    return Promise.resolve();
-  } 
-});
+export default defineComponent({});
 </script>
-<style lang="scss"></style>
+<style scoped>
+.home {
+  text-align: center;
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
   <router-link to="/">HOME</router-link> |
-  <router-link to="/client">Client</router-link> |
-  <router-link to="/test">Test</router-link>
+  <router-link to="/client">请求</router-link> |
+  <router-link to="/mock">模拟</router-link>
   <router-view></router-view>
 </template>
 <script lang="ts">

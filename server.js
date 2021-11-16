@@ -39,8 +39,10 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 	const manifest = isProd ? require("./dist/client/ssr-manifest.json") : {};
 
 	app.use("*", async (req, res) => {
-		const { originalUrl: url } = req;
-		console.log(`[server log] ${new Date()} - ${url}`);
+		const {
+			originalUrl: url
+		} = req;
+		console.log(`[server] ${new Date()} - ${url}`);
 		try {
 			let template, render;
 			if (isProd) {
@@ -54,20 +56,16 @@ async function createServer(root = process.cwd(), isProd = process.env.NODE_ENV 
 				render = (await vite.ssrLoadModule("/src/entry-server.js")).render;
 			}
 			
-			let {
-				html,
-				preloadLinks,
-				stateStr
-			} = await render(url, manifest); 
+			let { html, preloadLinks, state } = await render(url, manifest); 
 			
 			// 替换标记
 			html = template
 				.replace(`<!--preload-links-->`, preloadLinks)
 				.replace(
 					`<!--app-script-->`,
-					`<script type="application/javascript">window.__IS_FROM_SSR__=true;window.__INITIAL_STATE__=${stateStr}</script>`
+					`<script type="application/javascript">window.__IS_FROM_SSR__=true;window.__INITIAL_STATE__=${state}</script>`
 				)
-				// 客户端标记
+				// 替换客户端标记服务器渲染
 				.replace(`<!--app-html-->`, html);
 			// 响应
 			res.status(200).set({
@@ -90,6 +88,6 @@ createServer().then(({
 	app
 }) => {
 	app.listen(5555, () => {
-		console.log("[server] http://localhost:5555");
+		console.log("[server]：http://localhost:5555");
 	});
 });
