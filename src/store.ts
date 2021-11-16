@@ -1,13 +1,11 @@
-// store.ts
 import { InjectionKey } from "vue";
 import { RouteLocationNormalized } from "vue-router";
 import { createStore as _createStore, Store } from "vuex"; 
-import { getJson } from "@/request";
-
-// 为 store state 声明类型
+import { articleArchives } from "@/request";
+ 
 export interface State {
   client: string[];
-  server: string[];
+  mock: string[];
   posts: Array<any>;
 }
 
@@ -16,7 +14,7 @@ export interface AsyncDataParam {
   route: RouteLocationNormalized;
 }
 
-// 最新文章接口
+// 文章类型
 export interface NewPostsProps {
   image?: Array<{ name: string; url: string }> | string;
   tags: Array<string>;
@@ -30,37 +28,36 @@ export interface NewPostsProps {
   created_at: string;
 }
 
-// // 定义 injection key
+// injection key
 export const key: InjectionKey<Store<State>> = Symbol();
 
 export function createStore() {
   const store = _createStore<State>({
     state: {
       client: [],
-      server: [],
+      mock: [],
       posts: [],
     },
     mutations: { 
-      setServer(state, data) {
-        state.server = data;
+      mockData(state, data) {
+        state.mock = data;
       },
       getAllPosts(state, data: Array<NewPostsProps>) {
         state.posts = data;
       },
     },
     actions: { 
-      testData({ commit }) {
+      mockData({ commit }) {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            commit("setServer", ["vite", "express", "serialize-javascript"]);
+            commit("mockData", ["Angular", "Vue", "React"]);
             resolve(true);
           }, 20);
         });
-      },
-      // 全部文章
+      }, 
       getAllPosts({ commit }) {
-        return getJson().then((res) => {
-          commit("getAllPosts", res.data);
+        return articleArchives().then((res) => {
+          commit("getAllPosts", res.data); 
         });
       },
     },

@@ -8,28 +8,27 @@ import {
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/home"
-	},
+    redirect: "/home",
+  },
   {
     path: "/home",
     component: () => import("./views/Home.vue"),
-    children: [
-      {
-        path: "/client",
-        component: () => import("./views/Client.vue"),
-      },
-      {
-        path: "/test",
-        component: () => import("./views/Test.vue"),
-      },
-    ],
+  },
+  {
+    path: "/client",
+    component: () => import("./views/Client.vue"),
+  },
+  {
+    path: "/mock",
+    component: () => import("./views/Mock.vue"),
   },
 ];
 
 export function createRouter() {
-  return _createRouter({
-    // history: import.meta.env.SSR ? createMemoryHistory("/ssr") : createWebHistory("/ssr"),
-    history: (import.meta as any).env.SSR ? createMemoryHistory() : createWebHistory(),
+  return _createRouter({ 
+    history: (import.meta as any).env.SSR
+      ? createMemoryHistory()
+      : createWebHistory(),
     routes,
   });
 }

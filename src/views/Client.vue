@@ -7,10 +7,7 @@
   </div>
 </template>
 <script lang="ts">
-import {
-  defineComponent, 
-  computed,
-} from "vue";
+import { defineComponent, computed, } from "vue";
 import { useStore } from "vuex";
 import { key, State } from "../store"; 
 
@@ -18,12 +15,12 @@ export default defineComponent({
   asyncData({ store, router }: any) {
     return store.dispatch("getAllPosts");
   },
-  setup(props, context) {
+  setup() {
     const store = useStore<State>(key);
     const posts = computed(() => store.state.posts); 
 
     return {
-      posts,
+      posts
     };
   },
 });

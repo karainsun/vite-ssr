@@ -19,7 +19,7 @@ export function createApp() {
         isSameCompoent ||
         (isSameCompoent = fromMatchedComponents[index] !== compnent)
       );
-    }); 
+    });
 
     // 需要执行async的组件
     components.length &&
@@ -34,7 +34,7 @@ export function createApp() {
       ));
   });
 
-  app.use(store, key); 
+  app.use(store, key);
   app.use(router);
   return { app, router, store };
 }
